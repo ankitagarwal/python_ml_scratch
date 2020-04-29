@@ -19,9 +19,9 @@ class LogisticRegression:
         val = self.coefs[0]
         if len(self.coefs) != (len(x) + 1):
             raise RuntimeError ("Mismatch between length of coefficients and data. "
-                                "Expected {}, found {}".format(len(self.coefs), len(x)))
+                                "Expected {}, found {}".format(len(self.coefs), len(x)+1))
         for i in range(len(self.coefs)-1):
-            val += self.coefs[i + 1] * x
+            val += self.coefs[i + 1] * x[i]
         return val
 
     def sigmoid(self, x: int) -> int:
@@ -31,14 +31,21 @@ class LogisticRegression:
         """
         Predict a single value. Basically this is sigmoid over linear.
         """
-        return self.sigmoid(self.predict_single(x))
+        return self.sigmoid(self.linear_equation(x))
 
-    def predict(self, X: [[int]]) -> [[int]]:
+    def predict(self, X: [[int]], boundary: int = 0.5) -> [[int]]:
+        probabilities = self.predict_proba(X)
+        return [1 if i > boundary else 0 for i in probabilities]
+
+    def predict_proba(self, X: [[int]]) -> [[int]]:
         if not self.trained:
             raise RuntimeError("Can't predict without being trained.")
         Y = []
-        for x in X:
-            Y.append(self.predict(x))
+        X = np.array(X)
+        l, m = X.shape
+        for i in range(X.shape[0]):
+            x = X[i]
+            Y.append(self.predict_single(x))
         return Y
 
     def cost_function(self, y_hat: int, y: int) -> int:
@@ -72,19 +79,20 @@ class LogisticRegression:
         cost /= len(y_hats)
         return cost
 
-    def gradient(self, y_hat: int, y: int, x: [int]) -> int:
+    def gradient(self, y_hat: int, y: int, x: [int]) -> [int]:
         """
         see:
             images/cross-entropy-gradient.png
         """
-        x = x.insert(0, 1) # Constant term.
-        return x * (y_hat - y)
+        x = list(x)
+        x.insert(0, 1)  # Constant term.
+        return [i * (y_hat - y) for i in x]
 
     def train(self, X_train: [[int]], Y_train: [[int]], epoch: int = 1000, lr: int = 0.01):
         # Estimate logistic regression coefficients using stochastic gradient descent
         X_train = np.array(X_train)
         Y_train = np.array(Y_train)
-        self.coefs = np.zeros(X_train.shape[0])
+        self.coefs = np.zeros(X_train.shape[1]+1)
         for epoch in range(epoch):
             sum_error = 0
             for i in range(X_train.shape[0]):
