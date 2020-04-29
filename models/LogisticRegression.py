@@ -13,23 +13,33 @@ class LogisticRegression:
     """
 
     coefs = []
+    trained = False
 
-    def linear_equation(self, coefs: list[int], x: [int]) -> int:
-        val = coefs[0]
-        if len(coefs) != (len(x) + 1):
+    def linear_equation(self, x: [int]) -> int:
+        val = self.coefs[0]
+        if len(self.coefs) != (len(x) + 1):
             raise RuntimeError ("Mismatch between length of coefficients and data. "
-                                "Expected {}, found {}".format(len(coefs), len(x)))
-        for i in range(len(coefs)-1):
-            val += coefs[i + 1] * x
+                                "Expected {}, found {}".format(len(self.coefs), len(x)))
+        for i in range(len(self.coefs)-1):
+            val += self.coefs[i + 1] * x
         return val
+
+    def sigmoid(self, x: int) -> int:
+        return 1/(1 + np.exp(-x))
 
     def predict_single(self, x: [int]) -> int:
         """
         Predict a single value. Basically this is sigmoid over linear.
         """
-        linear = self.predict_single(x)
-        y_hat = 1/1 + np.exp(-linear)
-        return y_hat
+        return self.sigmoid(self.predict_single(x))
+
+    def predict(self, X: [[int]]) -> [[int]]:
+        if not self.trained:
+            raise RuntimeError("Can't predict without being trained.")
+        Y = []
+        for x in X:
+            Y.append(self.predict(x))
+        return Y
 
     def cost_function(self, y_hat: int, y: int) -> int:
         """
@@ -61,3 +71,31 @@ class LogisticRegression:
             cost += self.cost_function(y_hats[i], ys[i])
         cost /= len(y_hats)
         return cost
+
+    def gradient(self, y_hat: int, y: int, x: [int]) -> int:
+        """
+        see:
+            images/cross-entropy-gradient.png
+        """
+        x = x.insert(0, 1) # Constant term.
+        return x * (y_hat - y)
+
+    def train(self, X_train: [[int]], Y_train: [[int]], epoch: int = 1000, lr: int = 0.01):
+        # Estimate logistic regression coefficients using stochastic gradient descent
+        X_train = np.array(X_train)
+        Y_train = np.array(Y_train)
+        self.coefs = np.zeros(X_train.shape[0])
+        for epoch in range(epoch):
+            sum_error = 0
+            for i in range(X_train.shape[0]):
+                x = X_train[i]
+                y = Y_train[i]
+                y_hat = self.predict_single(x)
+                sum_error += self.cost_function(y_hat, y)
+                gradient = self.gradient(y_hat, y, x)
+                self.coefs = [lr*i for i in gradient]
+            print('>epoch=%d, lrate=%.3f, error=%.3f' % (epoch, lr, sum_error))
+        self.trained = True
+        return self.coefs
+
+
