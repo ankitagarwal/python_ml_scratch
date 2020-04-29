@@ -88,20 +88,23 @@ class LogisticRegression:
         x.insert(0, 1)  # Constant term.
         return [i * (y_hat - y) for i in x]
 
-    def train(self, X_train: [[int]], Y_train: [[int]], epoch: int = 1000, lr: int = 0.001):
+    def train(self, X_train: [[int]], Y_train: [[int]], epoch: int = 1000, lr: int = 0.01):
         # Estimate logistic regression coefficients using stochastic gradient descent
         X_train = np.array(X_train)
         Y_train = np.array(Y_train)
         self.coefs = np.zeros(X_train.shape[1]+1)
         for epoch in range(epoch):
             sum_error = 0
+            y_hats = []
             for i in range(X_train.shape[0]):
                 x = X_train[i]
                 y = Y_train[i]
                 y_hat = self.predict_single(x)
+                y_hats.append(y_hat)
                 sum_error += self.cost_function(y_hat, y)
                 gradient = self.gradient(y_hat, y, x)
-                self.coefs = [lr*i for i in gradient]
+                for i in range(len(self.coefs)):
+                    self.coefs[i] -= lr*gradient[i]
             print('>epoch=%d, lrate=%.3f, error=%.3f' % (epoch, lr, sum_error))
         self.trained = True
         return self.coefs
