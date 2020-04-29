@@ -5,9 +5,11 @@ class LogisticRegression:
 
     """
     Module to implement Logistic Regression using stochastic Gradient Descent. Not using numpy products was an intent.
+    Note: https://becominghuman.ai/machine-learning-series-day-2-logistic-regression-144af00f6ff5
     See:
         images/sigmoid.png
         images/logistic_regression_sigmoid_w_threshold.png
+        images/sigmoid-proof.png
     """
 
     coefs = []
@@ -47,7 +49,7 @@ class LogisticRegression:
         """
         first_term = y * np.log(y_hat)
         second_term = (1 - y) * np.log(1 - y_hat)
-        cost = (first_term + second_term)
+        cost = -(first_term + second_term)
         return cost
 
     def average_cost(self, y_hats: [int], ys: [int]) -> int:
