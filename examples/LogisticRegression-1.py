@@ -1,4 +1,6 @@
 from models.LogisticRegression import LogisticRegression as LR
+import pandas as pd
+import matplotlib.pyplot as plt
 
 X = [
         [2.7810836, 2.550537003],
@@ -16,4 +18,7 @@ y = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]
 
 model = LR()
 model.train(X, y)
+df = pd.DataFrame(model.predict_proba(X), columns=['pred'])
+df.reset_index().plot.scatter(y='pred', x='index')  # Not the right way to plot 1-d data.
+plt.show()
 print(model.predict(X))

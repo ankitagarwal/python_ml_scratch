@@ -88,7 +88,7 @@ class LogisticRegression:
         x.insert(0, 1)  # Constant term.
         return [i * (y_hat - y) for i in x]
 
-    def train(self, X_train: [[int]], Y_train: [[int]], epoch: int = 10000, lr: int = 0.01):
+    def train(self, X_train: [[int]], Y_train: [[int]], epoch: int = 1000, lr: int = 0.01):
         # Estimate logistic regression coefficients using stochastic gradient descent
         X_train = np.array(X_train)
         Y_train = np.array(Y_train)
