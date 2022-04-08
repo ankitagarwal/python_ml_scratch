@@ -1,4 +1,4 @@
-from models.LogisticRegression import LogisticRegression as LR
+from old_codes.models.LogisticRegression import LogisticRegression as LR
 import pandas as pd
 import matplotlib.pyplot as plt
 
