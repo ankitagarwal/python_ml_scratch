@@ -19,6 +19,20 @@ class CostFunctions:
         return (x[0] ** 3) + (x[1] ** 2)
 
     @staticmethod
+    def square_quad_sum_neg(x):
+        return (x[0] ** 4) - (x[1] ** 2)
+
+    @staticmethod
+    def der_sqaure_quad_sum_neg(x, i):
+        # 3a^2
+        if i == 0:
+            return 4*(x[0] ** 3)
+        elif i == 1:
+            # 2b
+            return -2*x[1]
+        raise Exception("Invalid data supplied")
+
+    @staticmethod
     def der_sqaure_cube_sum(x, i):
         # 3a^2
         if i == 0:

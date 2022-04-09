@@ -50,6 +50,7 @@ class GradientDescent:
                     break
             except OverflowError:
                 print("Limits reached, seems the equation doesn't have a minima.")
+                break
 
         # Minima reached.
         print("Final - iteration {} for value of x {} with f {} and decrease {}"
