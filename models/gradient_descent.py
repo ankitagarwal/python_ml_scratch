@@ -35,20 +35,25 @@ class GradientDescent:
         print("iteration {} for value of x {} with f {} and decrease {}"
               .format(self.iter, self.x, val2, (val - val2)))
         while val2 < val:
-            ders = self.take_step()
-            val = val2
-            val2 = self.f(self.x)
-            self.iter += 1
-            plot['y'].append(val2)
-            plot['x'].append(self.iter)
-            if self.iter % self.verbose == 0:
-                print("iteration {} for value of x {} with f {} and decrease {} with derivative {}"
-                      .format(self.iter, self.x, val2, (val - val2), ders))
-            if ((val - val2) < self.min_decrease) |\
-                    (self.iter == self.max_iter):
-                break
+            try:
+                ders = self.take_step()
+                val = val2
+                val2 = self.f(self.x)
+                self.iter += 1
+                plot['y'].append(val2)
+                plot['x'].append(self.iter)
+                if self.iter % self.verbose == 0:
+                    print("iteration {} for value of x {} with f {} and decrease {} with derivative {}"
+                          .format(self.iter, self.x, val2, (val - val2), ders))
+                if ((val - val2) < self.min_decrease) |\
+                        (self.iter == self.max_iter):
+                    break
+            except OverflowError:
+                print("Limits reached, seems the equation doesn't have a minima.")
 
         # Minima reached.
+        print("Final - iteration {} for value of x {} with f {} and decrease {}"
+              .format(self.iter, self.x, val2, (val - val2)))
         return [val, self.x, plot]
 
     def take_step(self):

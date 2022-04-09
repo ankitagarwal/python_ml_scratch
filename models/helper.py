@@ -12,12 +12,6 @@ class Helper:
             df.plot.hist()
             plt.show()
 
-        # Derivative
-        df = pd.DataFrame([d(v) for v in x])
-        if graphs:
-            df.plot.hist()
-            plt.show()
-
         # Let's see if our gradient works for this, obviously the answer should be at point 0.
         g = GradientDescent(f, d, start, alpha, verbose=verbose)
         [val, x, plot] = g.run_descent()
