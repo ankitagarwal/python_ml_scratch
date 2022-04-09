@@ -15,32 +15,35 @@ class GradientDescent:
     d = None
     iter = 0
     max_iter = 1000
+    verbose = 1
 
-    def __init__(self, f, d, x: [float], alpha: float = 0.001, max_iter: int = 1000, min_decrease: int = 0.1):
+    def __init__(self, f, d, x: [float], alpha: float = 0.001,
+                 max_iter: int = 1000, min_decrease: int = 0.1, verbose: int = 5):
         self.f = f
         self.x = x
         self.d = d
         self.alpha = alpha
         self.max_iter = max_iter
         self.min_decrease = min_decrease
+        self.verbose = verbose
 
     def run_descent(self):
         val = self.f(self.x)
         # Just dummy to start loop.
         val2 = val - 1
         plot = {'x': [], 'y': []}
+        print("iteration {} for value of x {} with f {} and decrease {}"
+              .format(self.iter, self.x, val2, (val - val2)))
         while val2 < val:
-            self.take_step()
+            ders = self.take_step()
             val = val2
             val2 = self.f(self.x)
             self.iter += 1
             plot['y'].append(val2)
             plot['x'].append(self.iter)
-            if self.iter % 5 == 0:
-                print("iteration ", self.iter)
-                print("x ", self.x)
-                print("function value ", val2)
-                print("Decrease ", val - val2)
+            if self.iter % self.verbose == 0:
+                print("iteration {} for value of x {} with f {} and decrease {} with derivative {}"
+                      .format(self.iter, self.x, val2, (val - val2), ders))
             if ((val - val2) < self.min_decrease) |\
                     (self.iter == self.max_iter):
                 break
@@ -49,6 +52,12 @@ class GradientDescent:
         return [val, self.x, plot]
 
     def take_step(self):
-        der = self.d(self.x)
-        self.x = [float(v) - self.alpha * der for v in self.x]
+        updated_x = []
+        ders = []
+        for i in range(len(self.x)):
+            der = self.d(self.x, i)
+            ders.append(der)
+            updated_x.append(float(self.x[i]) - self.alpha * float(der))
+        self.x = updated_x
+        return ders
 
